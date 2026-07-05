@@ -2,6 +2,50 @@
 // cl2up
 // -----------------------------
 
+// ==========================
+// PRELOADER
+// ==========================
+
+const preloader = document.getElementById("preloader");
+const progress = document.querySelector(".loader-progress");
+const text = document.querySelector(".loader-text");
+
+let percent = 0;
+
+const loading = setInterval(()=>{
+
+    percent++;
+
+    progress.style.width = percent + "%";
+
+    if(percent == 35){
+
+        text.textContent = "loading assets...";
+
+    }
+
+    if(percent == 70){
+
+        text.textContent = "starting animations...";
+
+    }
+
+    if(percent >= 100){
+
+        clearInterval(loading);
+
+        text.textContent = "welcome back.";
+
+        setTimeout(()=>{
+
+            preloader.classList.add("hide");
+
+        },500);
+
+    }
+
+},18);
+
 // ===== Cursor =====
 
 const dot = document.querySelector(".cursor-dot");
@@ -169,3 +213,146 @@ function animateLogo(){
 }
 
 animateLogo();
+
+// ===== Magnetic Buttons =====
+
+const magneticButtons = document.querySelectorAll(".buttons a");
+
+magneticButtons.forEach(button => {
+
+    button.addEventListener("mousemove", (e) => {
+
+        const rect = button.getBoundingClientRect();
+
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+
+        button.style.transform = `
+            translate(${x * 0.18}px, ${y * 0.18}px)
+            scale(1.03)
+        `;
+
+    });
+
+    button.addEventListener("mouseleave", () => {
+
+        button.style.transform = "translate(0px, 0px) scale(1)";
+
+    });
+
+});
+
+// ==========================
+// Background Grid Parallax
+// ==========================
+
+const grid = document.querySelector(".grid-bg");
+
+let gridTargetX = 0;
+let gridTargetY = 0;
+
+let gridX = 0;
+let gridY = 0;
+
+window.addEventListener("mousemove",(e)=>{
+
+    const x = (e.clientX / window.innerWidth - .5);
+    const y = (e.clientY / window.innerHeight - .5);
+
+    gridTargetX = x * 35;
+    gridTargetY = y * 35;
+
+});
+
+function animateGrid(){
+
+    gridX += (gridTargetX - gridX) * .03;
+    gridY += (gridTargetY - gridY) * .03;
+
+    grid.style.transform =
+        `translate(${gridX}px, ${gridY}px)`;
+
+    requestAnimationFrame(animateGrid);
+
+}
+
+animateGrid();
+
+// ===== Spotlight =====
+
+document.querySelectorAll(".card").forEach(card=>{
+
+    card.addEventListener("mousemove",(e)=>{
+
+        const rect = card.getBoundingClientRect();
+
+        card.style.setProperty(
+            "--x",
+            `${e.clientX - rect.left}px`
+        );
+
+        card.style.setProperty(
+            "--y",
+            `${e.clientY - rect.top}px`
+        );
+
+    });
+
+});
+
+// ===== Particles =====
+
+const container = document.getElementById("particles");
+
+for(let i=0;i<18;i++){
+
+    const p=document.createElement("div");
+
+    p.className="particle";
+
+    p.style.left=Math.random()*100+"vw";
+    p.style.top=Math.random()*100+"vh";
+
+    p.style.animation=`
+        float${i}
+        ${18+Math.random()*15}s
+        linear
+        infinite
+    `;
+
+    const style=document.createElement("style");
+
+    style.innerHTML=`
+    @keyframes float${i}{
+
+        0%{
+
+            transform:
+            translate(0,0);
+
+            opacity:.05;
+
+        }
+
+        50%{
+
+            opacity:.18;
+
+        }
+
+        100%{
+
+            transform:
+            translate(${Math.random()*80-40}px,-${250+Math.random()*200}px);
+
+            opacity:0;
+
+        }
+
+    }`;
+
+    document.head.appendChild(style);
+
+    container.appendChild(p);
+
+}
